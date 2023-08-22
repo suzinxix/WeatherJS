@@ -1,0 +1,22 @@
+const weatherIconMap = {
+    "01d": "sun",
+    "01n": "moon",
+    "02d": "cloud",
+    "02n": "cloud",
+    "03d": "cloud",
+    "03n": "cloud",
+    "04d": "cloud",
+    "04n": "cloud",
+    "03n": "cloud",
+    "09d": "cloud-drizzle",
+    "09n": "cloud-drizzle",
+    "10d": "cloud-rain",
+    "10n": "cloud-rain",
+    "11d": "cloud-lightning",
+    "11n": "cloud-lightning",
+    "13d": "cloud-snow",
+    "13n": "cloud-snow",
+    "50d": "water",
+    "50n": "water",
+  };
+export default weatherIconMap;

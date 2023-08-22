@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Web</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script type="module" src="./script.js" defer></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="contWrap">
+        <div class="left-info">
+          <div class="today-info">
+            <div>
+              <p class="city">Seoul</p>
+              <span class="today-date">Aug 10, 2023</span>
+            </div>
+            <div>
+              <p class="weather-temp">--°</p>
+              <div class="weather-type">
+                <i class="bx bx-sun"></i>
+                <p>Rain</p>
+              </div>
+            </div>
+          </div>
+          <div class="day-info fade">
+            <div>
+              <span class="title">FEELS LIKE</span>
+              <span class="value">4 %</span>
+            </div>
+            <div>
+              <span class="title">HUMIDITY</span>
+              <span class="value">34 %</span>
+            </div>
+            <div>
+              <span class="title">WIND SPEED</span>
+              <span class="value">6 km/h</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-info">
+          <div class="search">
+                <input type="text" placeholder="search" id="location"/>
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+          </div>
+          <div class="weather-time fade">
+            <div class="sub-title">weather for time</div>
+            <div class="line"></div>
+            <ul class="time-list">
+              <li>
+                <span>3 PM</span>
+                <i class="bx bx-cloud"></i>
+                <span class="time-temp">23°C</span>
+              </li>
+              <li>
+                <span>6 PM</span>
+                <i class="bx bx-cloud"></i>
+                <span class="time-temp">23°C</span>
+              </li>
+              <li>
+                <span>9 PM</span>
+                <i class="bx bx-cloud"></i>
+                <span class="time-temp">23°C</span>
+              </li>
+              <li>
+                <span>12 AM</span>
+                <i class="bx bx-cloud"></i>
+                <span class="time-temp">23°C</span>
+              </li>
+            </ul>
+          </div>
+          <div class="weather-4days fade">
+            <div class="sub-title">4 day weather forecast</div>
+            <div class="line"></div>
+            <ul class="days-list">
+                <li>
+                    <div>
+                      <span> <i class="bx "></i></span>
+                      <span></span>
+                    </div>
+                    <span class="day-temp"></span>
+                  </li>
+                  <li>
+                    <div>
+                      <span> <i class="bx bx-${weatherIconMap[iconCode]}"></i></span>
+                      <span></span>
+                    </div>
+                    <span class="day-temp"></span>
+                  </li>
+                  <li>
+                    <div>
+                      <span> <i class="bx bx-${weatherIconMap[iconCode]}"></i></span>
+                      <span></span>
+                    </div>
+                    <span class="day-temp"></span>
+                  </li>
+                  <li>
+                    <div>
+                      <span> <i class="bx bx-${weatherIconMap[iconCode]}"></i></span>
+                      <span></span>
+                    </div>
+                    <span class="day-temp"></span>
+                  </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
