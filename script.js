@@ -36,6 +36,7 @@ todayInfo.querySelector(".today-date").textContent =
     year: "numeric",
   });
 
+// fetch apis
 const getCurrnetWeather = async (location) => {
   const response = await fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&exclude=current&appid=${apiKey}`
