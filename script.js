@@ -16,18 +16,17 @@ const day = document.querySelector(".day-info");
 const weatherTime = document.querySelector(".weather-time");
 const weatherDays = document.querySelector(".weather-4days");
 
-function fadeRemove(){
-    day.classList.remove("fade");
-    weatherTime.classList.remove("fade");
-    weatherDays.classList.remove("fade");
+function fadeRemove() {
+  day.classList.remove("fade");
+  weatherTime.classList.remove("fade");
+  weatherDays.classList.remove("fade");
 }
 
-function fadeAdd(){
-    day.classList.add("fade");
-    weatherTime.classList.add("fade");
-    weatherDays.classList.add("fade");
+function fadeAdd() {
+  day.classList.add("fade");
+  weatherTime.classList.add("fade");
+  weatherDays.classList.add("fade");
 }
-
 
 todayInfo.querySelector(".today-date").textContent =
   new Date().toLocaleDateString("en", {
@@ -59,9 +58,10 @@ function fetchCurrentWeather(location) {
       dayInfo[0].textContent = `${todayFeelsLike}°`;
       dayInfo[1].textContent = `${data.main.humidity}%`;
       dayInfo[2].textContent = `${data.wind.speed.toFixed(1)} m/s`;
-    }).catch(error => {
-        console.log(error);
     })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 function fetchForecastWeather(location) {
@@ -113,15 +113,30 @@ function fetchForecastWeather(location) {
         if (count === 4) break;
       }
       fadeRemove();
-    }).catch(error => {
-        console.log(error);
+    })
+    .catch((error) => {
+      console.log(error);
     });
 }
 
+const getRegion = async () => {
+  const response = await fetch(
+    "https://ipinfo.io/121.131.244.170/json?token=66e5612b15274c"
+  );
+  if (response.status === 200) {
+    const location = await response.json();
+    console.log(location);
+    return location.region;
+  } else {
+    throw new Error("error");
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-  const defaultLocation = "Seoul";
-  fetchCurrentWeather(defaultLocation);
-  fetchForecastWeather(defaultLocation);
+  getRegion().then((data) => {
+    fetchCurrentWeather(data);
+    fetchForecastWeather(data);
+  });
 });
 
 button.addEventListener("click", () => {
