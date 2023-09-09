@@ -28,6 +28,7 @@ function fadeAdd() {
   weatherDays.classList.add("fade");
 }
 
+// today's date
 todayInfo.querySelector(".today-date").textContent =
   new Date().toLocaleDateString("en", {
     day: "numeric",
@@ -35,71 +36,98 @@ todayInfo.querySelector(".today-date").textContent =
     year: "numeric",
   });
 
-function fetchCurrentWeather(location) {
-  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&exclude=current&appid=${apiKey}`;
+const getCurrnetWeather = async (location) => {
+  const response = await fetch(
+    `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&exclude=current&appid=${apiKey}`
+  );
+  if (response.status === 200) {
+    const currnetWeather = await response.json();
+    return currnetWeather;
+  } else {
+    throw new Error("error");
+  }
+};
 
-  fetch(apiUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      const todayWeather = data.weather[0].main;
-      const todayWeatherIconCode = data.weather[0].icon;
-      const todayTemperature = `${Math.round(data.main.temp)}`;
-      const todayFeelsLike = `${Math.round(data.main.feels_like)}`;
+const getHourlyForecast = async (location) => {
+  const response = await fetch(
+    `https://api.openweathermap.org/data/2.5/forecast?q=${location}&units=metric&exclude=current&appid=${apiKey}`
+  );
+  if (response.status === 200) {
+    const forecastWeather = await response.json();
+    return forecastWeather;
+  } else {
+    throw new Error("error");
+  }
+};
 
-      // Today Info
-      const locationElement = todayInfo.querySelector(".city");
-      const weatherDescriptionElement =
-        todayInfo.querySelector(".weather-type > p");
+const getRegion = async () => {
+  const response = await fetch(
+    "https://ipinfo.io/121.131.244.170/json?token=66e5612b15274c"
+  );
+  if (response.status === 200) {
+    const location = await response.json();
+    return location.region;
+  } else {
+    throw new Error("error");
+  }
+};
 
-      locationElement.textContent = `${data.name}`;
-      weatherDescriptionElement.textContent = `${todayWeather}`;
-      todayWeatherIcon.className = `bx bx-${weatherIconMap[todayWeatherIconCode]}`;
-      todayTemp.textContent = `${todayTemperature}°`;
-      dayInfo[0].textContent = `${todayFeelsLike}°`;
-      dayInfo[1].textContent = `${data.main.humidity}%`;
-      dayInfo[2].textContent = `${data.wind.speed.toFixed(1)} m/s`;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
+// parallel processing
+const fetchAllWeatherData = async (location) => {
+  return Promise.all([getCurrnetWeather(location), getHourlyForecast(location)]);
+};
 
-function fetchForecastWeather(location) {
-  const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${location}&units=metric&exclude=current&appid=${apiKey}`;
+const fixElements = (location) => {
+  fetchAllWeatherData(location).then((data) => {
+    const current = data[0];
+    const hourly = data[1];
 
-  fetch(apiUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      const today = new Date();
-      const threeHourForecast = data.list.slice(1, 5);
+    // Today Info
+    const todayWeather = current.weather[0].main;
+    const todayWeatherIconCode = current.weather[0].icon;
+    const todayTemperature = `${Math.round(current.main.temp)}`;
+    const todayFeelsLike = `${Math.round(current.main.feels_like)}`;
 
-      let index = 0;
-      for (const t of threeHourForecast) {
-        timelistIcon[index].className = `bx bx-${
-          weatherIconMap[t.weather[0].icon]
-        }`;
-        timelistTemp[index].textContent = `${Math.round(t.main.temp)}°C`;
-        index++;
-      }
+    const locationElement = todayInfo.querySelector(".city");
+    const weatherDescriptionElement = todayInfo.querySelector(".weather-type > p");
 
-      const nextDaysData = data.list.slice(4);
-      const uniqueDays = new Set();
-      let count = 0;
-      daysList.innerHTML = "";
-      for (const dayData of nextDaysData) {
-        const forecastDate = new Date(dayData.dt_txt);
-        const day = forecastDate.toLocaleDateString("en", {
-          weekday: "long",
-        });
-        const dayTemp = `${Math.round(dayData.main.temp)}`;
-        const iconCode = dayData.weather[0].icon;
+    locationElement.textContent = `${current.name}`;
+    weatherDescriptionElement.textContent = `${todayWeather}`;
+    todayWeatherIcon.className = `bx bx-${weatherIconMap[todayWeatherIconCode]}`;
+    todayTemp.textContent = `${todayTemperature}°`;
+    dayInfo[0].textContent = `${todayFeelsLike}°`;
+    dayInfo[1].textContent = `${current.main.humidity}%`;
+    dayInfo[2].textContent = `${current.wind.speed.toFixed(1)} m/s`;
 
-        if (
-          !uniqueDays.has(day) &&
-          forecastDate.getDate() !== today.getDate()
-        ) {
-          uniqueDays.add(day);
-          daysList.innerHTML += `
+    // hourly
+    const today = new Date();
+    const hourlyForecast = hourly.list.slice(1, 5);
+
+    let index = 0;
+    for (const t of hourlyForecast) {
+      timelistIcon[index].className = `bx bx-${
+        weatherIconMap[t.weather[0].icon]
+      }`;
+      timelistTemp[index].textContent = `${Math.round(t.main.temp)}°C`;
+      index++;
+    }
+
+    // 4days
+    const nextDaysData = hourly.list.slice(4);
+    const uniqueDays = new Set();
+    let count = 0;
+    daysList.innerHTML = "";
+    for (const dayData of nextDaysData) {
+      const forecastDate = new Date(dayData.dt_txt);
+      const day = forecastDate.toLocaleDateString("en", {
+        weekday: "long",
+      });
+      const dayTemp = `${Math.round(dayData.main.temp)}`;
+      const iconCode = dayData.weather[0].icon;
+
+      if (!uniqueDays.has(day) && forecastDate.getDate() !== today.getDate()) {
+        uniqueDays.add(day);
+        daysList.innerHTML += `
                 <li>
                 <div>
                   <span> <i class="bx bx-${weatherIconMap[iconCode]}"></i></span>
@@ -108,50 +136,30 @@ function fetchForecastWeather(location) {
                 <span class="day-temp">${dayTemp}°C</span>
               </li>
                 `;
-          count++;
-        }
-        if (count === 4) break;
+        count++;
       }
-      fadeRemove();
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-const getRegion = async () => {
-  const response = await fetch(
-    "https://ipinfo.io/121.131.244.170/json?token=66e5612b15274c"
-  );
-  if (response.status === 200) {
-    const location = await response.json();
-    console.log(location);
-    return location.region;
-  } else {
-    throw new Error("error");
-  }
+      if (count === 4) break;
+    }
+    fadeRemove();
+  });
 };
 
 document.addEventListener("DOMContentLoaded", () => {
   getRegion().then((data) => {
-    fetchCurrentWeather(data);
-    fetchForecastWeather(data);
+    fixElements(data);
   });
 });
 
 button.addEventListener("click", () => {
   const location = document.getElementById("location").value;
   fadeAdd();
-  fetchCurrentWeather(location);
-  fetchForecastWeather(location);
+  fixElements(location);
 });
 
 window.addEventListener("keydown", (e) => {
   let location = searchValue.value;
-
   if (e.code === "Enter") {
     fadeAdd();
-    fetchCurrentWeather(location);
-    fetchForecastWeather(location);
+    fixElements(location);
   }
 });
