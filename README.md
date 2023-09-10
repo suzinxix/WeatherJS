@@ -1,8 +1,8 @@
 # Weather Forecast JS
-
+☀️ [사이트 바로가기](https://suzinxix.github.io/WeatherJS/)
 ## 프로젝트 소개
 날씨와 위치 API를 사용한 날씨 웹사이트 <br>
-☀️ [사이트 바로가기](https://suzinxix.github.io/WeatherJS/)
+
 
 
 ## 개발기간
